@@ -26,7 +26,7 @@ public class bplustree {
     public bplustree(int degree) {
         this.degree = degree;
         this.root = null;
-        this.internalNodeMinimumDegree = degree;
+        this.internalNodeMaximumDegree = degree;
         this.internalNodeMinimumDegree = (int) Math.ceil(degree / 2);
         this.maximumDataInLeafNode = degree - 1;
         this.minimumDataInLeafNode = (int) Math.ceil((degree / 2) - 1);
@@ -211,9 +211,15 @@ public class bplustree {
 
             for (int i = midPointIndex; i < listOfData.size(); i++) {
                 secondHalfDataList.add(listOfData.get(i));
-                listOfData.remove(i);
+                //listOfData.remove(i);
             }
 
+            for (int i = 0; i < secondHalfDataList.size(); i++) {
+                if (secondHalfDataList.get(i).getKey() == listOfData.get(midPointIndex).getKey()) {
+                    listOfData.remove(midPointIndex);
+                }
+            }
+            numberOfPairs = listOfData.size();
             return secondHalfDataList;
         }
     }
@@ -295,10 +301,23 @@ public class bplustree {
         }
 
         public void addChildPointer(Object node, int index) {
-            for (int i = degree - 1; i <= index; i--) {
-                listOfChildren.set(i + 1, listOfChildren.get(i));
+           /* int childrenListInitialSize = listOfChildren.size();
+            for (int i = degree - 1; i >= index; i--) {
+                listOfChildren.add(i + 1, listOfChildren.get(i));
             }
-            listOfChildren.set(index, node);
+            if (index >= listOfChildren.size()) {
+                int initialSize = listOfChildren.size();
+                for (int i = initialSize; i <= index; i++) {
+                    if (i == index) {
+                        listOfChildren.add(node);
+                    } else {
+                        listOfChildren.add(null);
+                    }
+                }
+            } else {
+                listOfChildren.set(index, node);
+            }*/
+            listOfChildren.add(index, node);
             degree++;
         }
 
@@ -317,11 +336,19 @@ public class bplustree {
         public ArrayList<Integer> splitKeys(int midPointIndex) {
             ArrayList<Integer> secondHalfKeysList = new ArrayList();
 
+            listOfKeys.remove(midPointIndex);
             for (int i = midPointIndex; i < listOfKeys.size(); i++) {
                 secondHalfKeysList.add(listOfKeys.get(i));
-                listOfKeys.remove(i);
+                // listOfKeys.remove(i);
             }
 
+            for (int i = 0; i < secondHalfKeysList.size(); i++) {
+                if (secondHalfKeysList.get(i) == listOfKeys.get(midPointIndex)) {
+                    listOfKeys.remove(midPointIndex);
+                }
+            }
+
+            // numberOfPairs = listOfData.size();
             return secondHalfKeysList;
         }
 
@@ -330,7 +357,10 @@ public class bplustree {
 
             for (int i = midPointIndex + 1; i < listOfChildren.size(); i++) {
                 secondHalfChildren.add(listOfChildren.get(i));
-                listOfChildren.remove(i);
+            }
+
+            for (int i = 0; i < secondHalfChildren.size(); i++) {
+                listOfChildren.remove(midPointIndex + 1);
                 degree--;
             }
 
@@ -353,7 +383,16 @@ public class bplustree {
 
                 if (lastNode.getParent() != null) {
                     int newParentKey = secondHalfDataList.get(0).getKey();
-                    lastNode.getParent().getListOfKeys().set(lastNode.getParent().getDegree() - 1, newParentKey);
+                    //int parentKeysSize = lastNode.getParent().getListOfKeys().size();
+                    lastNode.getParent().getListOfKeys().add(lastNode.getParent().getDegree() - 1, newParentKey);
+                    /*for (int i = parentKeysSize; i <= lastNode.getParent().getDegree() - 1; i++) {
+                        if (i == lastNode.getParent().getDegree() - 1) {
+                            lastNode.getParent().getListOfKeys().add(newParentKey);
+                        } else {
+                            lastNode.getParent().getListOfKeys().add(null);
+                        }
+                    }*/
+                    //lastNode.getParent().getListOfKeys().set(lastNode.getParent().getDegree() - 1, newParentKey);
                     lastNode.getParent().sortKeys();
                 } else {
                     ArrayList<Integer> parentKeys = new ArrayList();
@@ -376,7 +415,7 @@ public class bplustree {
                 if (root != null) {
                     InternalNode internalNode = lastNode.getParent();
                     while (internalNode != null) {
-                        if (degree == internalNodeMaximumDegree + 1) {
+                        if (internalNode.getDegree() == internalNodeMaximumDegree + 1) {
                             splitInternalNode(midPointIndex, internalNode);
                         } else {
                             break;
@@ -394,6 +433,8 @@ public class bplustree {
     }
 
     public void splitInternalNode(int midPointIndex, InternalNode internalNode) {
+        InternalNode parent = internalNode.getParentNode();
+        int newParentKey = internalNode.getListOfKeys().get(midPointIndex);
         ArrayList<Integer> secondHalfKeysList = internalNode.splitKeys(midPointIndex);
         ArrayList secondHalfPointersList = internalNode.splitChildPointers(midPointIndex);
         internalNode.setDegree(internalNode.getListOfChildren().size());
@@ -418,8 +459,6 @@ public class bplustree {
         internalNode.setRightSibling(sibling);
         sibling.setLeftSibling(internalNode);
 
-        InternalNode parent = internalNode.getParentNode();
-        int newParentKey = internalNode.getListOfKeys().get(midPointIndex);
         if (parent != null) {
             parent.getListOfKeys().add(newParentKey);
             parent.sortKeys();
@@ -441,17 +480,17 @@ public class bplustree {
     }
 
     public LeafNode getLeafNode(InternalNode node, int key) {
-        ArrayList<Integer> keys = root.getListOfKeys();
+        ArrayList<Integer> keys = node.getListOfKeys();
         int index = 0;
 
         while (index < node.getDegree() - 1) {
-            if (keys.get(index) < key) {
+            if (keys.get(index) > key) {
                 break;
             }
             index++;
         }
 
-        Object child = root.getListOfChildren().get(index);
+        Object child = node.getListOfChildren().get(index);
         return child instanceof InternalNode ? getLeafNode((InternalNode) child, key) : (LeafNode) child;
     }
 

@@ -12,7 +12,7 @@ public class bplustree {
     public static final String INITIALIZE = "Initialize";
     public static final String INSERT = "Insert";
     public static final String DELETE = "Delete";
-    public static final String Search = "Search";
+    public static final String SEARCH = "Search";
 
     private int degree;
     private int internalNodeMinimumDegree;
@@ -222,6 +222,16 @@ public class bplustree {
             numberOfPairs = listOfData.size();
             return secondHalfDataList;
         }
+
+        public boolean checkCanBorrow(int minimumDataInLeafNode, LeafNode sibling) {
+            return sibling != null && sibling.getParent() == parent
+                    && sibling.getNumberOfPairs() > minimumDataInLeafNode;
+        }
+
+        public boolean checkCanMerge(int minimumDataInLeafNode, LeafNode sibling) {
+            return sibling != null && sibling.getParent() == parent
+                    && sibling.getNumberOfPairs() == minimumDataInLeafNode;
+        }
     }
 
     class InternalNode {
@@ -366,6 +376,32 @@ public class bplustree {
 
             return secondHalfChildren;
         }
+
+        public boolean checkCanBorrow(int internalNodeMinimumDegree, InternalNode sibling) {
+            return sibling != null && sibling.getDegree() > internalNodeMinimumDegree;
+        }
+
+        public void shiftLeftChildren(int amount) {
+            ArrayList childrenList = new ArrayList();
+            for (int i = amount; i < this.getListOfChildren().size(); i++) {
+                childrenList.add(i - amount, this.getListOfChildren().get(i));
+            }
+
+            parentNode.setListOfChildren(childrenList);
+        }
+
+        public boolean checkCanMerge(int internalNodeMinimumDegree, InternalNode sibling) {
+            return sibling != null && sibling.getDegree() == internalNodeMinimumDegree;
+        }
+
+        /*public void shiftRightChildren(Object child) {
+         *//* for (int i = degree - 1; i >= 0; i--) {
+                listOfChildren.add(i + 1, listOfChildren.get(i));
+            }
+            listOfChildren.set(0, child);*//*
+            listOfChildren.add(0, child);
+            degree++;
+        }*/
     }
 
     public void insert(int key, double value) {
@@ -494,6 +530,185 @@ public class bplustree {
         return child instanceof InternalNode ? getLeafNode((InternalNode) child, key) : (LeafNode) child;
     }
 
+    public void adjustDeficientNodes(InternalNode node) {
+        InternalNode sibling;
+        InternalNode parent = node.getParentNode();
+
+        if (root.equals(node)) {
+            for (Object child : node.getListOfChildren()) {
+                if (child != null) {
+                    if (child instanceof InternalNode) {
+                        root = (InternalNode) child;
+                        root.setParentNode(null);
+                    } else {
+                        root = null;
+                    }
+                }
+            }
+        } else if (node.checkCanBorrow(internalNodeMinimumDegree, node.getLeftSibling())) {
+            sibling = node.getLeftSibling();
+
+            int borrowedKey = sibling.getListOfKeys().get(sibling.getDegree() - 1);
+            Object child = sibling.getListOfChildren().get(degree);
+
+            node.getListOfKeys().add(0, parent.getListOfKeys().get(parent.getDegree() - 1));
+            node.getListOfChildren().add(0, child);
+            parent.getListOfKeys().add(0, borrowedKey);
+
+            parent.getListOfKeys().remove(parent.getDegree() - 1);
+            sibling.getListOfChildren().remove(child);
+            sibling.getListOfKeys().remove(borrowedKey);
+            sibling.setDegree(sibling.getDegree() - 1);
+            sibling.sortKeys();
+        } else if (node.checkCanBorrow(internalNodeMinimumDegree, node.getRightSibling())) {
+            sibling = node.getRightSibling();
+
+            int borrowedKey = sibling.getListOfKeys().get(0);
+            Object child = sibling.getListOfChildren().get(0);
+
+            node.getListOfKeys().add(node.getDegree() - 1, parent.getListOfKeys().get(0));
+            node.getListOfChildren().add(node.getDegree(), child);
+            parent.getListOfKeys().add(parent.getDegree() - 1, borrowedKey);
+
+            parent.getListOfKeys().remove(0);
+            sibling.getListOfChildren().remove(child);
+            sibling.getListOfKeys().remove(borrowedKey);
+            sibling.setDegree(sibling.getDegree() - 1);
+            sibling.sortKeys();
+            //node.shiftLeftChildren(1);
+        } else if (node.checkCanMerge(internalNodeMinimumDegree, node.getLeftSibling())) {
+            sibling = node.getLeftSibling();
+
+            //sibling.getListOfKeys().set(sibling.getDegree() - 1, sibling.getListOfKeys().get(sibling.getDegree() - 2));
+            sibling.getListOfKeys().add(sibling.getDegree() - 1, parent.getListOfKeys().get(0));
+            sibling.sortKeys();
+            //sibling.getListOfKeys().remove(sibling.getDegree() - 2);
+
+            for (Object child : node.getListOfChildren()) {
+                if (child != null) {
+                    //sibling.shiftRightChildren(child);
+                    sibling.getListOfChildren().add(sibling.getDegree() - 1, child);
+                    sibling.setDegree(sibling.getDegree() + 1);
+                    if (child instanceof InternalNode) {
+                        InternalNode childInternal = (InternalNode) child;
+                        childInternal.setParentNode(sibling);
+                    } else {
+                        LeafNode leafNode = (LeafNode) child;
+                        leafNode.setParent(sibling);
+                    }
+                    node.getListOfChildren().remove(child);
+                    node.setDegree(node.getDegree() - 1);
+                }
+            }
+
+            parent.getListOfKeys().remove(0);
+            parent.getListOfChildren().remove(node);
+            parent.setDegree(parent.getDegree() - 1);
+            sibling.setRightSibling(node.getRightSibling());
+        } else if (node.checkCanMerge(internalNodeMinimumDegree, node.getRightSibling())) {
+            sibling = node.getRightSibling();
+
+            //sibling.getListOfKeys().set(sibling.getDegree() - 1, sibling.getListOfKeys().get(sibling.getDegree() - 2));
+            sibling.getListOfKeys().add(0, parent.getListOfKeys().get(parent.getDegree() - 1));
+            sibling.sortKeys();
+            //sibling.getListOfKeys().remove(sibling.getDegree() - 2);
+
+            for (Object child : node.getListOfChildren()) {
+                if (child != null) {
+                    //sibling.shiftRightChildren(child);
+                    sibling.getListOfChildren().add(0, child);
+                    sibling.setDegree(sibling.getDegree() + 1);
+                    if (child instanceof InternalNode) {
+                        InternalNode childInternal = (InternalNode) child;
+                        childInternal.setParentNode(sibling);
+                    } else {
+                        LeafNode leafNode = (LeafNode) child;
+                        leafNode.setParent(sibling);
+                    }
+                    node.getListOfChildren().remove(child);
+                    node.setDegree(node.getDegree() - 1);
+                }
+            }
+
+            parent.getListOfKeys().remove(parent.getDegree() - 1);
+            parent.getListOfChildren().remove(node);
+            parent.setDegree(parent.getDegree() - 1);
+
+            sibling.setLeftSibling(node.getLeftSibling());
+        }
+
+        if (parent != null && parent.getDegree() < internalNodeMinimumDegree) {
+            adjustDeficientNodes(parent);
+        }
+    }
+
+    public void delete(int key) {
+        if (firstLeafNode != null) {
+            LeafNode lastNode = root != null ? getLeafNode(root, key) : firstLeafNode;
+            int deleteKeyIndex = lastNode.getListOfData().indexOf(key);
+            if (deleteKeyIndex > -1) {
+                lastNode.getListOfData().remove(deleteKeyIndex);
+                if (root == null && firstLeafNode.getNumberOfPairs() == 0) {
+                    firstLeafNode = null;
+                } else if (lastNode.getNumberOfPairs() >= minimumDataInLeafNode) {
+                    lastNode.sortData();
+                } else {
+                    LeafNode sibling = null;
+                    InternalNode parent = lastNode.getParent();
+                    if (lastNode.checkCanBorrow(minimumDataInLeafNode, lastNode.getLeftSibling())) {
+                        sibling = lastNode.getLeftSibling();
+                        Data borrowedElement = sibling.getListOfData().remove(sibling.getNumberOfPairs() - 1);
+                        lastNode.insertData(maximumDataInLeafNode, borrowedElement);
+                        lastNode.sortData();
+
+                        int childPointerIndex = parent.findChildIndex(lastNode);
+                        if (borrowedElement.getKey() < parent.getListOfKeys().get(childPointerIndex - 1)) {
+                            parent.getListOfKeys().set(childPointerIndex - 1, lastNode.getListOfData().get(0).getKey());
+                        }
+                    } else if (lastNode.checkCanBorrow(minimumDataInLeafNode, lastNode.getRightSibling())) {
+                        sibling = lastNode.getRightSibling();
+                        Data borrowedElement = sibling.getListOfData().remove(0);
+                        lastNode.insertData(maximumDataInLeafNode, borrowedElement);
+                        lastNode.sortData();
+
+                        int childPointerIndex = parent.findChildIndex(lastNode);
+                        if (borrowedElement.getKey() >= parent.getListOfKeys().get(childPointerIndex)) {
+                            parent.getListOfKeys().set(childPointerIndex, sibling.getListOfData().get(0).getKey());
+                        }
+                    } else if (lastNode.checkCanMerge(minimumDataInLeafNode, lastNode.getLeftSibling())) {
+                        sibling = lastNode.getLeftSibling();
+
+                        int childPointerIndex = parent.findChildIndex(lastNode);
+                        parent.getListOfKeys().remove(childPointerIndex - 1);
+                        parent.getListOfChildren().remove(lastNode);
+                        parent.setDegree(parent.getDegree() - 1);
+
+                        sibling.setRightSibling(lastNode.getRightSibling());
+                        /*if (parent.getDegree() < internalNodeMinimumDegree) {
+                            adjustDeficientNodes(parent);
+                        }*/
+                    } else if (lastNode.checkCanMerge(minimumDataInLeafNode, lastNode.getRightSibling())) {
+                        sibling = sibling.getRightSibling();
+
+                        int childPointerIndex = parent.findChildIndex(lastNode);
+                        parent.getListOfKeys().remove(childPointerIndex);
+                        parent.getListOfChildren().remove(childPointerIndex);
+
+                        sibling.setLeftSibling(lastNode.getLeftSibling());
+                        if (sibling.getLeftSibling() == null) {
+                            firstLeafNode = sibling;
+                        }
+                    }
+                    if (parent.getDegree() < internalNodeMinimumDegree) {
+                        adjustDeficientNodes(parent);
+                    }
+                }
+            } else {
+                System.out.println("Element to be deleted does not exist");
+            }
+        }
+    }
+
     public static void main(String[] args) {
         if (args.length == 1) {
             File file = new File(args[0]);
@@ -509,10 +724,9 @@ public class bplustree {
                         bplustree = new bplustree(Integer.parseInt(tokens[1]));
                     } else if (option.equalsIgnoreCase(INSERT)) {
                         bplustree.insert(Integer.parseInt(tokens[1]), Double.parseDouble(tokens[2]));
-                    } else if (option.equalsIgnoreCase(Search)) {
-
+                    } else if (option.equalsIgnoreCase(SEARCH)) {
                     } else if (option.equalsIgnoreCase(DELETE)) {
-
+                        bplustree.delete(Integer.parseInt(tokens[1]));
                     }
                 }
                 bufferedReader.close();

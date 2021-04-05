@@ -4,10 +4,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.Collections.sort;
 
 public class bplustree {
+    public static Logger log = Logger.getLogger(bplustree.class.getName());
 
     public static final String INITIALIZE = "Initialize";
     public static final String INSERT = "Insert";
@@ -415,6 +422,43 @@ public class bplustree {
         }*/
     }
 
+    public static class LogFormatter extends Formatter {
+        @Override
+        public String format(LogRecord record) {
+            return getFormattedMessage(record.getMessage());
+        }
+
+        public String getFormattedMessage(String message) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(message);
+            sb.append("\n");
+            return sb.toString();
+        }
+    }
+
+    public static String removeWhiteSpace(String s) {
+        // Creating a pattern for whitespaces
+        Pattern patt = Pattern.compile("[\\s]");
+
+        // Searching patt in s.
+        Matcher mat = patt.matcher(s);
+
+        // Replacing
+        return mat.replaceAll("");
+    }
+
+    public static void initializeLogger() {
+        try {
+            FileHandler fileHandler = new FileHandler("output_file.txt");
+            fileHandler.setFormatter(new LogFormatter());
+            log.addHandler(fileHandler);
+            log.setUseParentHandlers(false);
+        } catch (IOException e) {
+            System.out.println("Error occured while creating output text file - " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public void insert(int key, double value) {
         Data data = new Data(key, value);
         if (firstLeafNode != null) {
@@ -745,6 +789,60 @@ public class bplustree {
         }
     }
 
+    public void search(int key) {
+        String result = null;
+
+        if (firstLeafNode != null) {
+            LeafNode node = firstLeafNode;
+            while (node != null) {
+                ArrayList<Data> dataList = node.getListOfData();
+                for (Data data : dataList) {
+                    if (data.getKey() == key) {
+                        result = Double.toString(data.getValue());
+                        break;
+                    }
+                }
+                node = node.getRightSibling();
+            }
+        }
+
+        if (result == null) {
+            log.info("Null");
+        } else {
+            log.info(result);
+        }
+    }
+
+    public void search(int lowerBound, int upperBound) {
+        ArrayList<Double> resultsList = new ArrayList();
+
+        if (firstLeafNode != null) {
+            LeafNode node = firstLeafNode;
+            while (node != null) {
+                ArrayList<Data> dataList = node.getListOfData();
+                for (Data data : dataList) {
+                    if (lowerBound <= data.getKey() && data.getKey() <= upperBound) {
+                        resultsList.add(data.getValue());
+                    }
+                }
+                node = node.getRightSibling();
+            }
+        }
+
+        if (resultsList.isEmpty()) {
+            log.info("Null");
+        } else {
+            StringBuffer result = new StringBuffer();
+            for (int i = 0; i < resultsList.size(); i++) {
+                result.append(resultsList.get(i));
+                if (i != resultsList.size() - 1) {
+                    result.append(",");
+                }
+            }
+            log.info(result.toString());
+        }
+    }
+
     public static void main(String[] args) {
         if (args.length == 1) {
             File file = new File(args[0]);
@@ -753,16 +851,24 @@ public class bplustree {
             bplustree bplustree = null;
             try {
                 bufferedReader = new BufferedReader(new FileReader(file));
+                initializeLogger();
                 while ((line = bufferedReader.readLine()) != null) {
-                    String[] tokens = line.trim().split("\\(|,|\\)");
+                    String[] tokens = removeWhiteSpace(line).trim().split("\\(|,|\\)");
                     String option = tokens[0];
                     if (option.equalsIgnoreCase(INITIALIZE)) {
-                        bplustree = new bplustree(Integer.parseInt(tokens[1]));
+                        bplustree = new bplustree(Integer.parseInt(tokens[1].trim()));
                     } else if (option.equalsIgnoreCase(INSERT)) {
-                        bplustree.insert(Integer.parseInt(tokens[1]), Double.parseDouble(tokens[2]));
+                        bplustree.insert(Integer.parseInt(tokens[1].trim()), Double.parseDouble(tokens[2].trim()));
                     } else if (option.equalsIgnoreCase(SEARCH)) {
+                        if (tokens.length == 2) {
+                            bplustree.search(Integer.parseInt(tokens[1].trim()));
+                        } else if (tokens.length == 3) {
+                            bplustree.search(Integer.parseInt(tokens[1].trim()), Integer.parseInt(tokens[2].trim()));
+                        } else {
+                            System.out.println("Invalid Search Option");
+                        }
                     } else if (option.equalsIgnoreCase(DELETE)) {
-                        bplustree.delete(Integer.parseInt(tokens[1]));
+                        bplustree.delete(Integer.parseInt(tokens[1].trim()));
                     }
                 }
                 bufferedReader.close();

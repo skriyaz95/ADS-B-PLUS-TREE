@@ -232,6 +232,17 @@ public class bplustree {
             return sibling != null && sibling.getParent() == parent
                     && sibling.getNumberOfPairs() == minimumDataInLeafNode;
         }
+
+        public int findIndexOfKeyInData(int key) {
+            int index = -1;
+            for (int i = 0; i < listOfData.size(); i++) {
+                if (listOfData.get(i).getKey() == key) {
+                    index = i;
+                }
+            }
+
+            return index;
+        }
     }
 
     class InternalNode {
@@ -456,6 +467,7 @@ public class bplustree {
                         } else {
                             break;
                         }
+                        internalNode = internalNode.getParentNode();
                     }
                 } else {
                     root = lastNode.getParent();
@@ -549,7 +561,7 @@ public class bplustree {
             sibling = node.getLeftSibling();
 
             int borrowedKey = sibling.getListOfKeys().get(sibling.getDegree() - 1);
-            Object child = sibling.getListOfChildren().get(degree);
+            Object child = sibling.getListOfChildren().get(sibling.getDegree());
 
             node.getListOfKeys().add(0, parent.getListOfKeys().get(parent.getDegree() - 1));
             node.getListOfChildren().add(0, child);
@@ -645,7 +657,7 @@ public class bplustree {
     public void delete(int key) {
         if (firstLeafNode != null) {
             LeafNode lastNode = root != null ? getLeafNode(root, key) : firstLeafNode;
-            int deleteKeyIndex = lastNode.getListOfData().indexOf(key);
+            int deleteKeyIndex = lastNode.findIndexOfKeyInData(key);
             if (deleteKeyIndex > -1) {
                 lastNode.getListOfData().remove(deleteKeyIndex);
                 if (root == null && firstLeafNode.getNumberOfPairs() == 0) {

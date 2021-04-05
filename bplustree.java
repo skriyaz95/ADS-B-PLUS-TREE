@@ -27,10 +27,10 @@ public class bplustree {
         this.degree = degree;
         this.root = null;
         this.internalNodeMaximumDegree = degree;
-        this.internalNodeMinimumDegree = (int) Math.ceil(degree / 2);
+        this.internalNodeMinimumDegree = (int) Math.ceil((double) degree / (double) 2);
         this.maximumDataInLeafNode = degree - 1;
-        this.minimumDataInLeafNode = (int) Math.ceil((degree / 2) - 1);
-        this.midPointIndex = (int) Math.ceil((degree + 1) / 2) - 1;
+        this.minimumDataInLeafNode = (int) Math.ceil((double) degree / (double) 2) - 1;
+        this.midPointIndex = (int) Math.ceil((double) (degree + 1) / (double) 2) - 1;
     }
 
     public int getDegree() {
@@ -402,7 +402,7 @@ public class bplustree {
         }
 
         public boolean checkCanMerge(int internalNodeMinimumDegree, InternalNode sibling) {
-            return sibling != null && sibling.getDegree() == internalNodeMinimumDegree;
+            return sibling != null && sibling.getParentNode() == parentNode && sibling.getDegree() == internalNodeMinimumDegree;
         }
 
         /*public void shiftRightChildren(Object child) {
@@ -563,13 +563,13 @@ public class bplustree {
             int borrowedKey = sibling.getListOfKeys().get(sibling.getDegree() - 1);
             Object child = sibling.getListOfChildren().get(sibling.getDegree());
 
-            node.getListOfKeys().add(0, parent.getListOfKeys().get(parent.getDegree() - 1));
+            node.getListOfKeys().add(0, parent.getListOfKeys().get(parent.getListOfKeys().size() - 1));
             node.getListOfChildren().add(0, child);
             parent.getListOfKeys().add(0, borrowedKey);
 
-            parent.getListOfKeys().remove(parent.getDegree() - 1);
+            parent.getListOfKeys().remove(parent.getListOfKeys().size() - 1);
             sibling.getListOfChildren().remove(child);
-            sibling.getListOfKeys().remove(borrowedKey);
+            sibling.getListOfKeys().remove(sibling.getDegree() - 1);
             sibling.setDegree(sibling.getDegree() - 1);
             sibling.sortKeys();
         } else if (node.checkCanBorrow(internalNodeMinimumDegree, node.getRightSibling())) {
@@ -584,7 +584,7 @@ public class bplustree {
 
             parent.getListOfKeys().remove(0);
             sibling.getListOfChildren().remove(child);
-            sibling.getListOfKeys().remove(borrowedKey);
+            sibling.getListOfKeys().remove(0);
             sibling.setDegree(sibling.getDegree() - 1);
             sibling.sortKeys();
             //node.shiftLeftChildren(1);
@@ -592,14 +592,17 @@ public class bplustree {
             sibling = node.getLeftSibling();
 
             //sibling.getListOfKeys().set(sibling.getDegree() - 1, sibling.getListOfKeys().get(sibling.getDegree() - 2));
-            sibling.getListOfKeys().add(sibling.getDegree() - 1, parent.getListOfKeys().get(0));
+            int childPointerIndex = parent.findChildIndex(node);
+            sibling.getListOfKeys().add(sibling.getDegree() - 1, parent.getListOfKeys().get(childPointerIndex - 1));
             sibling.sortKeys();
             //sibling.getListOfKeys().remove(sibling.getDegree() - 2);
 
-            for (Object child : node.getListOfChildren()) {
+            int nodeChildListSize = node.getListOfChildren().size();
+            for (int i = 0; i < nodeChildListSize; i++) {
+                Object child = node.getListOfChildren().get(i);
                 if (child != null) {
                     //sibling.shiftRightChildren(child);
-                    sibling.getListOfChildren().add(sibling.getDegree() - 1, child);
+                    sibling.getListOfChildren().add(sibling.getDegree(), child);
                     sibling.setDegree(sibling.getDegree() + 1);
                     if (child instanceof InternalNode) {
                         InternalNode childInternal = (InternalNode) child;
@@ -613,19 +616,25 @@ public class bplustree {
                 }
             }
 
-            parent.getListOfKeys().remove(0);
+            parent.getListOfKeys().remove(childPointerIndex - 1);
             parent.getListOfChildren().remove(node);
             parent.setDegree(parent.getDegree() - 1);
+            if (node.getRightSibling() != null) {
+                node.getRightSibling().setLeftSibling(sibling);
+            }
             sibling.setRightSibling(node.getRightSibling());
         } else if (node.checkCanMerge(internalNodeMinimumDegree, node.getRightSibling())) {
             sibling = node.getRightSibling();
 
             //sibling.getListOfKeys().set(sibling.getDegree() - 1, sibling.getListOfKeys().get(sibling.getDegree() - 2));
-            sibling.getListOfKeys().add(0, parent.getListOfKeys().get(parent.getDegree() - 1));
+            int childPointerIndex = parent.findChildIndex(node);
+            sibling.getListOfKeys().add(0, parent.getListOfKeys().get(childPointerIndex));
             sibling.sortKeys();
             //sibling.getListOfKeys().remove(sibling.getDegree() - 2);
 
-            for (Object child : node.getListOfChildren()) {
+            int nodeChildListSize = node.getListOfChildren().size();
+            for (int i = 0; i < nodeChildListSize; i++) {
+                Object child = node.getListOfChildren().get(i);
                 if (child != null) {
                     //sibling.shiftRightChildren(child);
                     sibling.getListOfChildren().add(0, child);
@@ -642,10 +651,12 @@ public class bplustree {
                 }
             }
 
-            parent.getListOfKeys().remove(parent.getDegree() - 1);
+            parent.getListOfKeys().remove(childPointerIndex);
             parent.getListOfChildren().remove(node);
             parent.setDegree(parent.getDegree() - 1);
-
+            if (node.getLeftSibling() != null) {
+                node.getLeftSibling().setRightSibling(sibling);
+            }
             sibling.setLeftSibling(node.getLeftSibling());
         }
 
@@ -660,6 +671,7 @@ public class bplustree {
             int deleteKeyIndex = lastNode.findIndexOfKeyInData(key);
             if (deleteKeyIndex > -1) {
                 lastNode.getListOfData().remove(deleteKeyIndex);
+                lastNode.setNumberOfPairs(lastNode.getNumberOfPairs() - 1);
                 if (root == null && firstLeafNode.getNumberOfPairs() == 0) {
                     firstLeafNode = null;
                 } else if (lastNode.getNumberOfPairs() >= minimumDataInLeafNode) {
@@ -669,9 +681,12 @@ public class bplustree {
                     InternalNode parent = lastNode.getParent();
                     if (lastNode.checkCanBorrow(minimumDataInLeafNode, lastNode.getLeftSibling())) {
                         sibling = lastNode.getLeftSibling();
-                        Data borrowedElement = sibling.getListOfData().remove(sibling.getNumberOfPairs() - 1);
+                        Data borrowedElement = sibling.getListOfData().get(sibling.getNumberOfPairs() - 1);
                         lastNode.insertData(maximumDataInLeafNode, borrowedElement);
                         lastNode.sortData();
+
+                        sibling.getListOfData().remove(sibling.getNumberOfPairs() - 1);
+                        sibling.setNumberOfPairs(sibling.getNumberOfPairs() - 1);
 
                         int childPointerIndex = parent.findChildIndex(lastNode);
                         if (borrowedElement.getKey() < parent.getListOfKeys().get(childPointerIndex - 1)) {
@@ -679,9 +694,12 @@ public class bplustree {
                         }
                     } else if (lastNode.checkCanBorrow(minimumDataInLeafNode, lastNode.getRightSibling())) {
                         sibling = lastNode.getRightSibling();
-                        Data borrowedElement = sibling.getListOfData().remove(0);
+                        Data borrowedElement = sibling.getListOfData().get(0);
                         lastNode.insertData(maximumDataInLeafNode, borrowedElement);
                         lastNode.sortData();
+
+                        sibling.getListOfData().remove(0);
+                        sibling.setNumberOfPairs(sibling.getNumberOfPairs() - 1);
 
                         int childPointerIndex = parent.findChildIndex(lastNode);
                         if (borrowedElement.getKey() >= parent.getListOfKeys().get(childPointerIndex)) {
@@ -692,23 +710,29 @@ public class bplustree {
 
                         int childPointerIndex = parent.findChildIndex(lastNode);
                         parent.getListOfKeys().remove(childPointerIndex - 1);
-                        parent.getListOfChildren().remove(lastNode);
+                        parent.getListOfChildren().remove(childPointerIndex);
                         parent.setDegree(parent.getDegree() - 1);
 
+                        if (lastNode.getRightSibling() != null) {
+                            lastNode.getRightSibling().setLeftSibling(sibling);
+                        }
                         sibling.setRightSibling(lastNode.getRightSibling());
                         /*if (parent.getDegree() < internalNodeMinimumDegree) {
                             adjustDeficientNodes(parent);
                         }*/
                     } else if (lastNode.checkCanMerge(minimumDataInLeafNode, lastNode.getRightSibling())) {
-                        sibling = sibling.getRightSibling();
+                        sibling = lastNode.getRightSibling();
 
                         int childPointerIndex = parent.findChildIndex(lastNode);
                         parent.getListOfKeys().remove(childPointerIndex);
                         parent.getListOfChildren().remove(childPointerIndex);
+                        parent.setDegree(parent.getDegree() - 1);
 
                         sibling.setLeftSibling(lastNode.getLeftSibling());
                         if (sibling.getLeftSibling() == null) {
                             firstLeafNode = sibling;
+                        } else {
+                            sibling.getLeftSibling().setRightSibling(sibling);
                         }
                     }
                     if (parent.getDegree() < internalNodeMinimumDegree) {

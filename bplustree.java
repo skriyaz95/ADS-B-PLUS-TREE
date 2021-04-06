@@ -26,30 +26,20 @@ import static java.util.Collections.sort;
 public class bplustree {
     public static Logger writer = Logger.getLogger(bplustree.class.getName());
 
-    //Operations Supported in B+ tree
     public static final String INITIALIZE = "Initialize";
     public static final String INSERT = "Insert";
     public static final String DELETE = "Delete";
     public static final String SEARCH = "Search";
 
     public static final String NULL_VALUE = "Null";
-
-    //Degree of the B+ tree
-    private int degree;
-    //The Minimum Number of Child Pointers to be present in Internal Node
-    private int internalNodeMinimumDegree;
-    //The Maximum Number of Child Pointers to be present in Internal Node
-    private int internalNodeMaximumDegree;
-    //The Minimum Number of Key Value Pairs to be present in Leaf Node
-    private int minimumDataInLeafNode;
-    //The Maximum Number of Key Value Pairs to be present in Leaf Node
-    private int maximumDataInLeafNode;
-    //The Index at which Keys of Internal Node and Key Value pairs in Leaf Node are to be split
-    private int midPointIndex;
-    //The root of the B+ Tree
-    private InternalNode root;
-    //The Initial Leaf Node Used as root when there are no Internal Nodes
-    private LeafNode firstLeafNode;
+    public int degree;
+    public int internalNodeMinimumDegree;
+    public int internalNodeMaximumDegree;
+    public int minimumDataInLeafNode;
+    public int maximumDataInLeafNode;
+    public int midPointIndex;
+    public InternalNode root;
+    public LeafNode firstLeafNode;
 
     /**
      * Constructs an empty B+Tree with degree provided and initializes all the properties needed to perform operations.
@@ -216,10 +206,8 @@ public class bplustree {
      * @author Riyaz Shaik
      */
     public class Data {
-        // The key of the key value pair
-        private int key;
-        // The value of the key value pair
-        private double value;
+        public int key;
+        public double value;
 
         /**
          * Constructs a Data Instance with key value pairs provided in the params.
@@ -302,16 +290,11 @@ public class bplustree {
      * @author Riyaz Shaik
      */
     public class LeafNode {
-        //Number of Key Value pairs in the Leaf Node
-        private int numberOfPairs;
-        //The parent(Internal Node) of the Leaf Node
-        private InternalNode parent;
-        //The left sibling in the DLL of the Leaf Node
-        private LeafNode leftSibling;
-        //The right sibling in the DLL of the Leaf Node
-        private LeafNode rightSibling;
-        //The list of key value pairs stored by the Leaf Node
-        private ArrayList<Data> listOfData = new ArrayList();
+        public int numberOfPairs;
+        public InternalNode parent;
+        public LeafNode leftSibling;
+        public LeafNode rightSibling;
+        public ArrayList<Data> listOfData = new ArrayList();
 
         /**
          * Constructs a Leaf Node Instance having no key value pairs
@@ -538,18 +521,12 @@ public class bplustree {
      * @author Riyaz Shaik
      */
     public class InternalNode {
-        // The current number of child pointers of the internal node
-        private int degree;
-        // The left sibling of the Internal Node
-        private InternalNode leftSibling;
-        // The right sibling of the Internal Node
-        private InternalNode rightSibling;
-        // The parent (Internal Node) of the Internal Node
-        private InternalNode parentNode;
-        // The list of keys of the Internal Node
-        private ArrayList<Integer> listOfKeys = new ArrayList();
-        // The list of child pointers of the Internal Node
-        private ArrayList listOfChildren = new ArrayList();
+        public int degree;
+        public InternalNode leftSibling;
+        public InternalNode rightSibling;
+        public InternalNode parentNode;
+        public ArrayList<Integer> listOfKeys = new ArrayList();
+        public ArrayList listOfChildren = new ArrayList();
 
         /**
          * Constructs a 0 degree Internal Node Instance having keys provided in the method arguments
@@ -1432,6 +1409,7 @@ public class bplustree {
                         bplustree.delete(Integer.parseInt(tokens[1].trim()));
                     }
                 }
+                System.out.println("Output file - output_file.txt generated successfully.");
                 bufferedReader.close();
             } catch (IOException e) {
                 System.out.println("Error occured while reading input file or writing output file - " + e.getMessage());

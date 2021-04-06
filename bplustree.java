@@ -132,7 +132,7 @@ public class bplustree {
     /**
      * Setter Method to set the value of minimum number of child pointers of Internal Node of the B+ Tree.
      *
-     * @param internalNodeMinimumDegree - minimum number of child pointers of Internal Node of B+ tree
+     * @param internalNodeMinimumDegree minimum number of child pointers of Internal Node of B+ tree
      */
     public void setInternalNodeMinimumDegree(int internalNodeMinimumDegree) {
         this.internalNodeMinimumDegree = internalNodeMinimumDegree;
@@ -150,7 +150,7 @@ public class bplustree {
     /**
      * Setter Method to set the value of maximum number of child pointers of Internal Node of the B+ Tree.
      *
-     * @param internalNodeMaximumDegree -  maximum number of child pointers of Internal Node of B+ tree
+     * @param internalNodeMaximumDegree maximum number of child pointers of Internal Node of B+ tree
      */
     public void setInternalNodeMaximumDegree(int internalNodeMaximumDegree) {
         this.internalNodeMaximumDegree = internalNodeMaximumDegree;
@@ -168,7 +168,7 @@ public class bplustree {
     /**
      * Setter Method to set the value of minimum number of key value pairs in Leaf Node of the B+ Tree.
      *
-     * @param minimumDataInLeafNode -  minimum number of key value pairs in Leaf Node of B+ tree
+     * @param minimumDataInLeafNode minimum number of key value pairs in Leaf Node of B+ tree
      */
     public void setMinimumDataInLeafNode(int minimumDataInLeafNode) {
         this.minimumDataInLeafNode = minimumDataInLeafNode;
@@ -186,7 +186,7 @@ public class bplustree {
     /**
      * Setter Method to set the value of maximum number of key value pairs in Leaf Node of the B+ Tree.
      *
-     * @param maximumDataInLeafNode - maximum number of key value pairs in Leaf Node of B+ tree
+     * @param maximumDataInLeafNode maximum number of key value pairs in Leaf Node of B+ tree
      */
     public void setMaximumDataInLeafNode(int maximumDataInLeafNode) {
         this.maximumDataInLeafNode = maximumDataInLeafNode;
@@ -204,7 +204,7 @@ public class bplustree {
     /**
      * Setter Method to set the value of Index at which Keys of Internal Node and Key Value pairs in Leaf Node are to be split in the B+ Tree.
      *
-     * @param midPointIndex - index at which Keys of Internal Node and Key Value pairs in Leaf Node are to be split in the B+ Tree
+     * @param midPointIndex index at which Keys of Internal Node and Key Value pairs in Leaf Node are to be split in the B+ Tree
      */
     public void setMidPointIndex(int midPointIndex) {
         this.midPointIndex = midPointIndex;
@@ -224,8 +224,8 @@ public class bplustree {
         /**
          * Constructs a Data Instance with key value pairs provided in the params.
          *
-         * @param key   - The key of the key value pair.
-         * @param value - The value of the key value pair.
+         * @param key The key of the key value pair.
+         * @param value The value of the key value pair.
          */
         public Data(int key, double value) {
             this.key = key;
@@ -244,7 +244,7 @@ public class bplustree {
         /**
          * Setter Method to set key of the Key Value pair.
          *
-         * @param key - key of key value pair
+         * @param key key of key value pair
          */
         public void setKey(int key) {
             this.key = key;
@@ -262,7 +262,7 @@ public class bplustree {
         /**
          * Setter Method to set value of the Key Value pair.
          *
-         * @param value - value of key value pair
+         * @param value value of key value pair
          */
         public void setValue(double value) {
             this.value = value;
@@ -327,8 +327,8 @@ public class bplustree {
          * Constructs a Leaf Node Instance having key value pairs provided in the method arguments
          * and with parent value provided in the method arguments
          *
-         * @param dataList - The list of key value pairs
-         * @param parent   - The parent of the Leaf Node
+         * @param dataList The list of key value pairs
+         * @param parent The parent of the Leaf Node
          */
         public LeafNode(ArrayList<Data> dataList, InternalNode parent) {
             this.listOfData = dataList;
@@ -348,7 +348,7 @@ public class bplustree {
         /**
          * Setter Method to set number of Key Value pairs in Leaf Node.
          *
-         * @param numberOfPairs - number of Key Value pairs in Leaf Node
+         * @param numberOfPairs number of Key Value pairs in Leaf Node
          */
         public void setNumberOfPairs(int numberOfPairs) {
             this.numberOfPairs = numberOfPairs;
@@ -366,7 +366,7 @@ public class bplustree {
         /**
          * Setter Method to set left sibling in DLL of Leaf Node.
          *
-         * @param leftSibling - left sibling in DLL of Leaf Node
+         * @param leftSibling left sibling in DLL of Leaf Node
          */
         public void setLeftSibling(LeafNode leftSibling) {
             this.leftSibling = leftSibling;
@@ -384,7 +384,7 @@ public class bplustree {
         /**
          * Setter Method to set right sibling in DLL of Leaf Node.
          *
-         * @param rightSibling - right sibling in DLL of Leaf Node
+         * @param rightSibling right sibling in DLL of Leaf Node
          */
         public void setRightSibling(LeafNode rightSibling) {
             this.rightSibling = rightSibling;
@@ -402,7 +402,7 @@ public class bplustree {
         /**
          * Setter Method to set list of key value pairs of Leaf Node.
          *
-         * @param listOfData - list of key value pairs of Leaf Node
+         * @param listOfData list of key value pairs of Leaf Node
          */
         public void setListOfData(ArrayList<Data> listOfData) {
             this.listOfData = listOfData;
@@ -420,7 +420,7 @@ public class bplustree {
         /**
          * Setter Method to set parent of Leaf Node.
          *
-         * @param parent - parent (Internal Node) of Leaf Node
+         * @param parent parent (Internal Node) of Leaf Node
          */
         public void setParent(InternalNode parent) {
             this.parent = parent;
@@ -430,12 +430,12 @@ public class bplustree {
          * This method adds new key value pair (Data) to Leaf Node.
          * It checks whether the current list of Key Value pairs size is not greater than maximum
          * number of key value pairs that a leaf node can hold
-         * 1. It inserts if the size of list < maximum number of key value pairs of leaf node can have and returns true
+         * 1. It inserts if the size of list is less than maximum number of key value pairs of leaf node can have and returns true
          * 2. If not it doesnt insert and returns false
          *
-         * @param leafNodeMaximumPairs - The maximum number of key value pairs a leaf node can have.
-         * @param data                 - The Key value pair(represented in stored in Data class).
-         * @return true - insertion successful, false - insertion unsuccessful.
+         * @param leafNodeMaximumPairs The maximum number of key value pairs a leaf node can have.
+         * @param data                The Key value pair(represented in stored in Data class).
+         * @return true insertion successful, false insertion unsuccessful.
          */
         public boolean insertData(int leafNodeMaximumPairs, Data data) {
             boolean isInserted = false;
@@ -465,7 +465,7 @@ public class bplustree {
          * It returns back the list containing the second half of key value pairs
          * and removes those elements from the original list.
          *
-         * @param midPointIndex - The index on which the list of key value pairs are to be split
+         * @param midPointIndex The index on which the list of key value pairs are to be split
          * @return The list containing the second half of key value pairs
          */
         public ArrayList<Data> splitDataList(int midPointIndex) {
@@ -487,10 +487,10 @@ public class bplustree {
         /**
          * This method is used to check if the current Leaf Node can borrow a Key Value pair from its sibling Node.
          *
-         * @param minimumDataInLeafNode - The minimum number of key value pairs that leaf node can hold
-         * @param sibling               - The sibling of the current leaf node
-         * @return true - If Leaf Node can borrow a key value pair from its sibling,
-         * false - If Leaf Node cannot borrow a key value pair from its sibling
+         * @param minimumDataInLeafNode The minimum number of key value pairs that leaf node can hold
+         * @param sibling               The sibling of the current leaf node
+         * @return true If Leaf Node can borrow a key value pair from its sibling,
+         * false If Leaf Node cannot borrow a key value pair from its sibling
          */
         public boolean checkCanBorrow(int minimumDataInLeafNode, LeafNode sibling) {
             return sibling != null && sibling.getParent() == parent
@@ -500,10 +500,10 @@ public class bplustree {
         /**
          * This method is used to check if the current Leaf Node can merge with its sibling Node.
          *
-         * @param minimumDataInLeafNode - The minimum number of key value pairs that leaf node can hold
-         * @param sibling               - The sibling of the current leaf node
-         * @return true - If Leaf Node can merge with its sibling,
-         * false - If Leaf Node cannot merge with its sibling
+         * @param minimumDataInLeafNode The minimum number of key value pairs that leaf node can hold
+         * @param sibling               The sibling of the current leaf node
+         * @return true If Leaf Node can merge with its sibling,
+         * false If Leaf Node cannot merge with its sibling
          */
         public boolean checkCanMerge(int minimumDataInLeafNode, LeafNode sibling) {
             return sibling != null && sibling.getParent() == parent
@@ -513,9 +513,9 @@ public class bplustree {
         /**
          * This method is used to find the index of a key in the list of key value pairs of current Leaf Node.
          *
-         * @param key - The key whose index needs to be found
-         * @return index - index of the key if key value pair is present,
-         * -1 - if key is not present
+         * @param key The key whose index needs to be found
+         * @return index index of the key if key value pair is present,
+         * -1 if key is not present
          */
         public int findIndexOfKeyInData(int key) {
             int index = -1;
@@ -554,7 +554,7 @@ public class bplustree {
         /**
          * Constructs a 0 degree Internal Node Instance having keys provided in the method arguments
          *
-         * @param keys - The list of keys
+         * @param keys The list of keys
          */
         public InternalNode(ArrayList<Integer> keys) {
             this.degree = 0;
@@ -564,8 +564,8 @@ public class bplustree {
         /**
          * Constructs an Internal Node with degree and list of child pointers provided in the method arguments
          *
-         * @param keys     - The list of keys
-         * @param children - The list of child pointers
+         * @param keys     The list of keys
+         * @param children The list of child pointers
          */
         public InternalNode(ArrayList<Integer> keys, ArrayList children) {
             this.degree = children.size();
@@ -585,7 +585,7 @@ public class bplustree {
         /**
          * Setter Method to set degree of Internal Node.
          *
-         * @param degree - degree of Internal Node
+         * @param degree degree of Internal Node
          */
         public void setDegree(int degree) {
             this.degree = degree;
@@ -603,7 +603,7 @@ public class bplustree {
         /**
          * Setter Method to set left sibling of Internal Node.
          *
-         * @param leftSibling - left sibling of Internal Node
+         * @param leftSibling left sibling of Internal Node
          */
         public void setLeftSibling(InternalNode leftSibling) {
             this.leftSibling = leftSibling;
@@ -621,7 +621,7 @@ public class bplustree {
         /**
          * Setter Method to set right sibling of Internal Node.
          *
-         * @param rightSibling - right sibling of Internal Node
+         * @param rightSibling right sibling of Internal Node
          */
         public void setRightSibling(InternalNode rightSibling) {
             this.rightSibling = rightSibling;
@@ -639,7 +639,7 @@ public class bplustree {
         /**
          * Setter Method to set parent of Internal Node.
          *
-         * @param parentNode - parent of Internal Node
+         * @param parentNode parent of Internal Node
          */
         public void setParentNode(InternalNode parentNode) {
             this.parentNode = parentNode;
@@ -657,7 +657,7 @@ public class bplustree {
         /**
          * Setter Method to set list of keys of Internal Node.
          *
-         * @param listOfKeys - list of keys of Internal Node
+         * @param listOfKeys list of keys of Internal Node
          */
         public void setListOfKeys(ArrayList<Integer> listOfKeys) {
             this.listOfKeys = listOfKeys;
@@ -675,7 +675,7 @@ public class bplustree {
         /**
          * Setter Method to set list of child pointers of Internal Node.
          *
-         * @param listOfChildren - list of child pointers of Internal Node
+         * @param listOfChildren list of child pointers of Internal Node
          */
         public void setListOfChildren(ArrayList listOfChildren) {
             this.listOfChildren = listOfChildren;
@@ -691,7 +691,7 @@ public class bplustree {
         /**
          * This method is used to add a new child pointer to the exsiting list of child pointers.
          *
-         * @param node - The child to be added to the existing list of children
+         * @param node The child to be added to the existing list of children
          */
         public void addChildPointer(Object node) {
             listOfChildren.add(node);
@@ -704,8 +704,8 @@ public class bplustree {
          * The new child is inserted at position index and children
          * previously at position index and above are pushed right.
          *
-         * @param node  - The child to be added to the existing list of children
-         * @param index - The index at which the child needs to be added
+         * @param node  The child to be added to the existing list of children
+         * @param index The index at which the child needs to be added
          */
         public void addChildPointer(Object node, int index) {
             listOfChildren.add(index, node);
@@ -716,9 +716,9 @@ public class bplustree {
          * This method is used to search for a child in list of children.
          * It returns the index of child if the child is found else it returns -1.
          *
-         * @param node - The child to be found.
-         * @return index - index of the key if key value pair is present,
-         * -1 - if key is not present
+         * @param node The child to be found.
+         * @return index index of the key if key value pair is present,
+         * -1 if key is not present
          */
         public int findChildIndex(Object node) {
             int index = 0;
@@ -739,7 +739,7 @@ public class bplustree {
          * It returns back the list containing the second half of keys
          * and removes those elements from the original list.
          *
-         * @param midPointIndex - The index on which the list of keys are to be split
+         * @param midPointIndex The index on which the list of keys are to be split
          * @return The list containing the second half of keys
          */
         public ArrayList<Integer> splitKeys(int midPointIndex) {
@@ -766,7 +766,7 @@ public class bplustree {
          * It returns back the list containing the second half of child pointers
          * and removes those elements from the original list.
          *
-         * @param midPointIndex - The index on which the list of keys are to be split
+         * @param midPointIndex The index on which the list of keys are to be split
          * @return The list containing the second half of child pointers
          */
         public ArrayList splitChildPointers(int midPointIndex) {
@@ -787,10 +787,10 @@ public class bplustree {
         /**
          * This method is used to check if the current Internal Node can borrow a Key from its sibling Node.
          *
-         * @param internalNodeMinimumDegree - The minimum number of children that internal node can have
-         * @param sibling                   - The sibling of the current internal node
-         * @return true - If Internal Node can borrow a key from its sibling,
-         * false - If Internal Node cannot borrow a key from its sibling
+         * @param internalNodeMinimumDegree The minimum number of children that internal node can have
+         * @param sibling                   The sibling of the current internal node
+         * @return true If Internal Node can borrow a key from its sibling,
+         * false If Internal Node cannot borrow a key from its sibling
          */
         public boolean checkCanBorrow(int internalNodeMinimumDegree, InternalNode sibling) {
             return sibling != null && sibling.getDegree() > internalNodeMinimumDegree;
@@ -799,10 +799,10 @@ public class bplustree {
         /**
          * This method is used to check if the current Internal Node can merge with its sibling Node.
          *
-         * @param internalNodeMinimumDegree - The minimum number of key value pairs that leaf node can hold
-         * @param sibling                   - The sibling of the current internal node
-         * @return true - If Internal Node can merge with its sibling,
-         * false - If Internal Node cannot merge with its sibling
+         * @param internalNodeMinimumDegree The minimum number of key value pairs that leaf node can hold
+         * @param sibling                   The sibling of the current internal node
+         * @return true If Internal Node can merge with its sibling,
+         * false If Internal Node cannot merge with its sibling
          */
         public boolean checkCanMerge(int internalNodeMinimumDegree, InternalNode sibling) {
             return sibling != null && sibling.getParentNode() == parentNode && sibling.getDegree() == internalNodeMinimumDegree;
@@ -819,7 +819,7 @@ public class bplustree {
          * This Method is used to format the output file records.
          * It accepts a log record and returns the formatted output record
          *
-         * @param record - output file record
+         * @param record output file record
          * @return formatted output file record
          */
         @Override
@@ -831,7 +831,7 @@ public class bplustree {
          * This Method is used to format the message.
          * It accepts a message and formats it
          *
-         * @param message - message to be formatted
+         * @param message message to be formatted
          * @return formatted message
          */
         public String formattedMessage(String message) {
@@ -847,7 +847,7 @@ public class bplustree {
      * It accepts a string and removes any whitespaces present in it.
      * For example `Delete (10)` becomes `Delete(10)`
      *
-     * @param s - string whose in between whitespaces are to be removed
+     * @param s string whose in between whitespaces are to be removed
      * @return string with in between whitespaces removed
      */
     public static String removeInBetweenWhiteSpaces(String s) {
@@ -881,8 +881,8 @@ public class bplustree {
      * It accepts a key value pair and inserts it into a leaf node
      * and balances internal nodes from bottom to top.
      *
-     * @param key   - Key to inserted
-     * @param value - value to inserted
+     * @param key   Key to inserted
+     * @param value value to inserted
      */
     public void insert(int key, double value) {
         Data data = new Data(key, value);
@@ -960,8 +960,8 @@ public class bplustree {
      * This method splits keys and children lists based on midpoint index and creates a new sibling node
      * containing half the keys and child pointers and adds the sibling node to parent
      *
-     * @param midPointIndex - index at which keys and child pointers are to be split
-     * @param internalNode  - node to be split
+     * @param midPointIndex index at which keys and child pointers are to be split
+     * @param internalNode  node to be split
      */
     public void splitInternalNode(int midPointIndex, InternalNode internalNode) {
         //split the keys and child pointers
@@ -1021,8 +1021,8 @@ public class bplustree {
      * This method is used to get the leaf node which has the key from an internal node.
      * It accepts Internal Node and Key and returns the Leaf Node which contains the key
      *
-     * @param node - the Internal Node from where leaf node needs to be found
-     * @param key - key to be found
+     * @param node the Internal Node from where leaf node needs to be found
+     * @param key key to be found
      *
      * @return Leaf Node which contains the key
      */
@@ -1049,7 +1049,7 @@ public class bplustree {
      *
      * It adjust from the current node till root
      *
-     * @param node - node to be adjusted
+     * @param node node to be adjusted
      */
     public void adjustInternalNodes(InternalNode node) {
         InternalNode sibling;
@@ -1203,7 +1203,7 @@ public class bplustree {
      *
      * After adjusting leaf node if internal node becomes deficient it adjust internal node all the way upto root
      *
-     * @param key - key of the key value pair to be deleted
+     * @param key key of the key value pair to be deleted
      */
     public void delete(int key) {
         // Tree is not empty
@@ -1319,7 +1319,7 @@ public class bplustree {
      * of that particular key value pair to the output file.
      * It accepts a key and writes value of that key if key is found else writes 'Null' to output file
      *
-     * @param key - key to be searched
+     * @param key key to be searched
      */
     public void search(int key) {
         String result = null;
@@ -1352,8 +1352,8 @@ public class bplustree {
      * It accepts lowerBound and upperBound and writes value of those keys which fall in range of [lowerBound, upperBound]
      * else writes 'Null' if no  values are found to output file
      *
-     * @param lowerBound - lowerBound of the range of keys to be searched
-     * @param upperBound - upperBound of the range of keys to be searched
+     * @param lowerBound lowerBound of the range of keys to be searched
+     * @param upperBound upperBound of the range of keys to be searched
      */
     public void search(int lowerBound, int upperBound) {
         ArrayList<Double> resultsList = new ArrayList();
@@ -1394,7 +1394,7 @@ public class bplustree {
      * It reads input file to insert values to it and delete values from it.
      * It writes the search results to output file
      *
-     * @param args - Pass the name of the input file containing tree operations
+     * @param args Pass the name of the input file containing tree operations
      */
     public static void main(String[] args) {
         if (args.length == 1) {
